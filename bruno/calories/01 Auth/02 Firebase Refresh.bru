@@ -1,0 +1,27 @@
+meta {
+  name: 02 Firebase Refresh
+  type: http
+  seq: 2
+}
+
+post {
+  url: https://securetoken.googleapis.com/v1/token?key={{FIREBASE_API_KEY}}
+  body: json
+  auth: none
+}
+
+params:query {
+  key: {{FIREBASE_API_KEY}}
+}
+
+body:json {
+  {
+    "grant_type": "refresh_token",
+    "refresh_token": "{{REFRESH_TOKEN}}"
+  }
+}
+
+vars:post-response {
+  JWT_TOKEN: res.body.idToken
+  REFRESH_TOKEN: res.body.refreshToken
+}

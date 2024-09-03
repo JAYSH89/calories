@@ -1,0 +1,23 @@
+meta {
+  name: 01 Register
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{BASE_URL}}/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{EMAIL}}",
+    "password": "{{PASSWORD}}"
+  }
+}
+
+vars:post-response {
+  JWT_TOKEN: res.body.access_token
+  REFRESH_TOKEN: res.body.refresh_token
+}
