@@ -1,0 +1,10 @@
+{
+  "kind": "test kind",
+  "localId": "localId",
+  "email": "test@example.com",
+  "displayName": "",
+  "idToken": "idToken",
+  "registered": true,
+  "refreshToken": "refreshToken",
+  "expiresIn": "3600"
+}

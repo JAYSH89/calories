@@ -1,0 +1,28 @@
+meta {
+  name: 01 Firebase Sign In
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{FIREBASE_URL}}/accounts:signInWithPassword?key={{FIREBASE_API_KEY}}
+  body: json
+  auth: none
+}
+
+params:query {
+  key: {{FIREBASE_API_KEY}}
+}
+
+body:json {
+  {
+    "email": "{{EMAIL}}",
+    "password": "{{PASSWORD}}",
+    "returnSecureToken": true
+  }
+}
+
+vars:post-response {
+  JWT_TOKEN: res.body.idToken
+  REFRESH_TOKEN: res.body.refreshToken
+}

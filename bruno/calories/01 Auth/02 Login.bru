@@ -1,0 +1,23 @@
+meta {
+  name: 02 Login
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{BASE_URL}}/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "{{EMAIL}}",
+    "password": "{{PASSWORD}}"
+  }
+}
+
+vars:post-response {
+  JWT_TOKEN: res.body.access_token
+  REFRESH_TOKEN: res.body.refresh_token
+}
