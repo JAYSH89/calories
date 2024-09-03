@@ -38,3 +38,7 @@ out/
 
 ### Kotlin ###
 .kotlin
+environment.env
+start-db.sh
+src/main/resources/service_account.json
+.run/CaloriesApplication.run.xml
