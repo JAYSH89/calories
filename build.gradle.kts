@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.spring)
     alias(libs.plugins.dependency.management)
     alias(libs.plugins.sqldelight)
+    alias(libs.plugins.spotless)
 }
 
 group = "nl.jaysh"
@@ -57,6 +58,12 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+spotless {
+    kotlin {
+        targetExclude("**/build/**")
+        ktfmt("0.46").googleStyle()
+    }
+}
 sqldelight {
     databases {
         create("Database") {
