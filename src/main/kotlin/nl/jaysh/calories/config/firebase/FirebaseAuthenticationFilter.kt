@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpStatus
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.filter.OncePerRequestFilter
 
@@ -23,10 +24,10 @@ class FirebaseAuthenticationFilter : OncePerRequestFilter() {
 
     try {
       val decodedToken = FirebaseAuth.getInstance().verifyIdToken(token)
-
       val userId = decodedToken.uid
-
-      val authToken = FirebaseAuthenticationToken(userId, decodedToken, emptyList())
+      val role = decodedToken.claims["role"]?.toString() ?: "USER"
+      val authorities = listOf(SimpleGrantedAuthority("ROLE_$role"))
+      val authToken = FirebaseAuthenticationToken(userId, decodedToken, authorities)
 
       val newContext = SecurityContextHolder.createEmptyContext()
       newContext.authentication = authToken
