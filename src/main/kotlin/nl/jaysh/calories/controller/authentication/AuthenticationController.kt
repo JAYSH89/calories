@@ -14,18 +14,18 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/auth")
 class AuthenticationController(private val service: AuthenticationService) {
 
-    @PostMapping("/login")
-    fun login(@RequestBody request: AuthenticationRequest): AuthenticationResponse {
-        return service.login(request = request)
-    }
+  @PostMapping("/login")
+  fun login(@RequestBody request: AuthenticationRequest): AuthenticationResponse {
+    return service.login(request = request)
+  }
 
-    @PostMapping("/register")
-    fun register(@RequestBody request: AuthenticationRequest): AuthenticationResponse {
-        return service.register(request = request)
-    }
+  @PostMapping("/register")
+  fun register(@RequestBody request: AuthenticationRequest): AuthenticationResponse {
+    return service.register(request = request)
+  }
 
-    @PostMapping("/refresh")
-    fun refresh(@RequestBody request: RefreshTokenRequest): RefreshTokenResponse {
-        return service.refresh(request = request)
-    }
+  @PostMapping("/refresh")
+  fun refresh(@RequestBody request: RefreshTokenRequest): RefreshTokenResponse {
+    return service.refresh(request = request)
+  }
 }

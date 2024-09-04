@@ -10,6 +10,7 @@ logback = "1.5.7"
 coroutines = "1.9.0-RC.2"
 mockk = "1.13.12"
 springmockk = "4.0.2"
+spotless = "6.22.0"
 
 [libraries]
 firebase-admin = { group = "com.google.firebase", name = "firebase-admin", version.ref = "firebase" }
@@ -69,3 +70,4 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 spring = { id = "org.springframework.boot", version.ref = "spring" }
 dependency-management = { id = "io.spring.dependency-management", version.ref = "dependency-management" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sql-delight" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

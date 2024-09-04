@@ -5,13 +5,15 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FirebaseRefreshRequest(
-    @SerialName("grant_type") val grantType: String,
-    @SerialName("refresh_token") val refreshToken: String,
+  @SerialName("grant_type") val grantType: String,
+  @SerialName("refresh_token") val refreshToken: String,
 ) {
-    companion object {
-        fun fromRefreshRequest(request: RefreshTokenRequest): FirebaseRefreshRequest = FirebaseRefreshRequest(
-            grantType = "refresh_token",
-            refreshToken = request.refreshToken,
-        )
+  companion object {
+    fun fromRefreshRequest(request: RefreshTokenRequest): FirebaseRefreshRequest {
+      return FirebaseRefreshRequest(
+        grantType = "refresh_token",
+        refreshToken = request.refreshToken,
+      )
     }
+  }
 }

@@ -6,12 +6,14 @@ import com.google.firebase.auth.FirebaseAuthException
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.verify
+import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import nl.jaysh.calories.exception.ApiException
 import nl.jaysh.calories.exception.ApiRequestException
 import nl.jaysh.calories.exception.ErrorMessages
-import nl.jaysh.calories.exception.ErrorMessages.EMAIL_ALREADY_EXISTS
+import nl.jaysh.calories.exception.ErrorMessages.EMAIL_EXISTS
 import nl.jaysh.calories.exception.ErrorMessages.INVALID_EMAIL_ADDRESS
 import nl.jaysh.calories.exception.ErrorMessages.INVALID_PASSWORD
 import nl.jaysh.calories.helper.objects.AuthenticationObjectHelper
@@ -20,194 +22,195 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
+import org.springframework.http.MediaType.APPLICATION_JSON
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers
-import kotlin.test.Test
-import kotlin.test.assertEquals
 
 @WebMvcTest(controllers = [AuthenticationController::class])
 @AutoConfigureMockMvc(addFilters = false)
 class AuthenticationControllerTest {
 
-    @Autowired
-    private lateinit var mockMvc: MockMvc
+  @Autowired private lateinit var mockMvc: MockMvc
 
-    @MockkBean
-    private lateinit var authService: AuthenticationService
+  @MockkBean private lateinit var authService: AuthenticationService
 
-    private val json = Json { ignoreUnknownKeys = true }
+  private val json = Json { ignoreUnknownKeys = true }
 
-    // Helper method for POST request
-    private fun performPostRequest(url: String, content: String): ResultActions = mockMvc.perform(
-        MockMvcRequestBuilders.post(url)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(content)
+  // Helper method for POST request
+  private fun performPostRequest(url: String, content: String): ResultActions {
+    return mockMvc.perform(
+      MockMvcRequestBuilders.post(url).contentType(APPLICATION_JSON).content(content)
+    )
+  }
+
+  // Helper method to verify response and assert Exceptions
+  private fun verifyExceptionResponse(
+    result: ResultActions,
+    expectedStatus: HttpStatus,
+    expectedMessage: String,
+  ) {
+    val response =
+      result
+        .andExpect(MockMvcResultMatchers.status().`is`(expectedStatus.value()))
+        .andReturn()
+        .response
+        .contentAsString
+
+    val actualException = Json.decodeFromString<ApiException>(response)
+    val expectedException = ApiException(message = expectedMessage, statusCode = expectedStatus)
+
+    assertEquals(expectedException.message, actualException.message)
+    assertEquals(expectedException.statusCode, actualException.statusCode)
+  }
+
+  @Test
+  fun `register should return 200 and response success`() {
+    val request = AuthenticationObjectHelper.authRequest
+    every { authService.register(request) } returns AuthenticationObjectHelper.authResponse
+
+    performPostRequest(url = "/auth/register", content = json.encodeToString(request))
+      .andExpect(MockMvcResultMatchers.status().isOk)
+      .andExpect {
+        val actualJson = it.response.contentAsString
+        val expectedJson = Json.encodeToString(AuthenticationObjectHelper.authResponse)
+        assertEquals(expectedJson, actualJson)
+      }
+
+    verify { authService.register(any()) }
+  }
+
+  @Test
+  fun `register not valid email address should 400 BAD REQUEST`() {
+    val invalidRequest = AuthenticationObjectHelper.authRequest.copy(email = "invalid-email")
+    every { authService.register(invalidRequest) } throws
+      ApiRequestException("invalid email address")
+
+    val result =
+      performPostRequest(url = "/auth/register", content = json.encodeToString(invalidRequest))
+    verifyExceptionResponse(
+      result = result,
+      expectedStatus = HttpStatus.BAD_REQUEST,
+      expectedMessage = INVALID_EMAIL_ADDRESS,
     )
 
-    // Helper method to verify response and assert Exceptions
-    private fun verifyExceptionResponse(
-        result: ResultActions,
-        expectedStatus: HttpStatus,
-        expectedMessage: String,
-    ) {
-        val response = result
-            .andExpect(MockMvcResultMatchers.status().`is`(expectedStatus.value()))
-            .andReturn()
-            .response
-            .contentAsString
+    verify { authService.register(any()) }
+  }
 
-        val actualException = Json.decodeFromString<ApiException>(response)
-        val expectedException = ApiException(message = expectedMessage, statusCode = expectedStatus)
+  @Test
+  fun `register not valid password should 400 BAD REQUEST`() {
+    val invalidRequest = AuthenticationObjectHelper.authRequest.copy(password = "")
+    every { authService.register(invalidRequest) } throws
+      ApiRequestException(ErrorMessages.INVALID_PASSWORD)
 
-        assertEquals(expectedException.message, actualException.message)
-        assertEquals(expectedException.statusCode, actualException.statusCode)
-    }
+    val result = performPostRequest("/auth/register", content = Json.encodeToString(invalidRequest))
+    verifyExceptionResponse(
+      result = result,
+      expectedStatus = HttpStatus.BAD_REQUEST,
+      expectedMessage = INVALID_PASSWORD,
+    )
 
-    @Test
-    fun `register should return 200 and response success`() {
-        val request = AuthenticationObjectHelper.authRequest
-        every { authService.register(request) } returns AuthenticationObjectHelper.authResponse
+    verify { authService.register(any()) }
+  }
 
-        performPostRequest(url = "/auth/register", content = json.encodeToString(request))
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect {
-                val actualJson = it.response.contentAsString
-                val expectedJson = Json.encodeToString(AuthenticationObjectHelper.authResponse)
-                assertEquals(expectedJson, actualJson)
-            }
+  @Test
+  fun `register email already in use should 409 CONFLICT`() {
+    val request = AuthenticationObjectHelper.authRequest
+    val firebaseException =
+      FirebaseAuthException(
+        ErrorCode.ALREADY_EXISTS,
+        EMAIL_EXISTS,
+        Throwable(),
+        null,
+        AuthErrorCode.EMAIL_ALREADY_EXISTS,
+      )
+    every { authService.register(request) } throws firebaseException
 
-        verify { authService.register(any()) }
-    }
+    val result = performPostRequest(url = "/auth/register", content = json.encodeToString(request))
+    verifyExceptionResponse(
+      result = result,
+      expectedStatus = HttpStatus.CONFLICT,
+      expectedMessage = EMAIL_EXISTS,
+    )
 
-    @Test
-    fun `register not valid email address should 400 BAD REQUEST`() {
-        val invalidRequest = AuthenticationObjectHelper.authRequest.copy(email = "invalid-email")
-        every { authService.register(invalidRequest) } throws ApiRequestException("invalid email address")
+    verify { authService.register(any()) }
+  }
 
-        val result = performPostRequest(url = "/auth/register", content = json.encodeToString(invalidRequest))
-        verifyExceptionResponse(
-            result = result,
-            expectedStatus = HttpStatus.BAD_REQUEST,
-            expectedMessage = INVALID_EMAIL_ADDRESS,
-        )
+  @Test
+  fun `login should return 200 and response success`() {
+    val request = AuthenticationObjectHelper.authRequest
+    every { authService.login(request) } returns AuthenticationObjectHelper.authResponse
 
-        verify { authService.register(any()) }
-    }
+    performPostRequest("/auth/login", content = json.encodeToString(request))
+      .andExpect(MockMvcResultMatchers.status().isOk)
+      .andExpect {
+        val actualJson = it.response.contentAsString
+        val expectedJson = Json.encodeToString(AuthenticationObjectHelper.authResponse)
+        assertEquals(expectedJson, actualJson)
+      }
 
-    @Test
-    fun `register not valid password should 400 BAD REQUEST`() {
-        val invalidRequest = AuthenticationObjectHelper.authRequest.copy(password = "")
-        every { authService.register(invalidRequest) } throws ApiRequestException(ErrorMessages.INVALID_PASSWORD)
+    verify { authService.login(any()) }
+  }
 
-        val result = performPostRequest("/auth/register", content = Json.encodeToString(invalidRequest))
-        verifyExceptionResponse(
-            result = result,
-            expectedStatus = HttpStatus.BAD_REQUEST,
-            expectedMessage = INVALID_PASSWORD,
-        )
+  @Test
+  fun `register empty body should 400 BAD REQUEST`() {
+    // todo
+  }
 
-        verify { authService.register(any()) }
-    }
+  @Test
+  fun `register email parameter missing should 400 BAD REQUEST`() {
+    // todo
+  }
 
-    @Test
-    fun `register email already in use should 409 CONFLICT`() {
-        val request = AuthenticationObjectHelper.authRequest
-        val firebaseException = FirebaseAuthException(
-            ErrorCode.ALREADY_EXISTS,
-            EMAIL_ALREADY_EXISTS,
-            Throwable(),
-            null,
-            AuthErrorCode.EMAIL_ALREADY_EXISTS,
-        )
-        every { authService.register(request) } throws firebaseException
+  @Test
+  fun `register password parameter missing should 400 BAD REQUEST`() {
+    // todo
+  }
 
-        val result = performPostRequest(url = "/auth/register", content = json.encodeToString(request))
-        verifyExceptionResponse(
-            result = result,
-            expectedStatus = HttpStatus.CONFLICT,
-            expectedMessage = EMAIL_ALREADY_EXISTS,
-        )
+  @Test
+  fun `login invalid email address should 400 BAD REQUEST`() {
+    // todo
+  }
 
-        verify { authService.register(any()) }
-    }
+  @Test
+  fun `login invalid email password combination should 401 UNAUTHORIZED`() {
+    // todo
+  }
 
-    @Test
-    fun `login should return 200 and response success`() {
-        val request = AuthenticationObjectHelper.authRequest
-        every { authService.login(request) } returns AuthenticationObjectHelper.authResponse
+  @Test
+  fun `login empty body should 400 BAD REQUEST`() {
+    // todo
+  }
 
-        performPostRequest("/auth/login", content = json.encodeToString(request))
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect {
-                val actualJson = it.response.contentAsString
-                val expectedJson = Json.encodeToString(AuthenticationObjectHelper.authResponse)
-                assertEquals(expectedJson, actualJson)
-            }
+  @Test
+  fun `login email parameter missing should 400 BAD REQUEST`() {
+    // todo
+  }
 
-        verify { authService.login(any()) }
-    }
+  @Test
+  fun `login password parameter missing should 400 BAD REQUEST`() {
+    // todo
+  }
 
-    @Test
-    fun `register empty body should 400 BAD REQUEST`() {
-        // todo
-    }
+  @Test
+  fun `refresh should return 200 and response success`() {
+    val request = AuthenticationObjectHelper.refreshTokenRequest
+    every { authService.refresh(request) } returns AuthenticationObjectHelper.refreshTokenResponse
 
-    @Test
-    fun `register email parameter missing should 400 BAD REQUEST`() {
-        // todo
-    }
+    performPostRequest(url = "/auth/refresh", content = json.encodeToString(request))
+      .andExpect(MockMvcResultMatchers.status().isOk)
+      .andExpect {
+        val actualJson = it.response.contentAsString
+        val expectedJson = Json.encodeToString(AuthenticationObjectHelper.refreshTokenResponse)
+        assertEquals(expectedJson, actualJson)
+      }
 
-    @Test
-    fun `register password parameter missing should 400 BAD REQUEST`() {
-        // todo
-    }
+    verify { authService.refresh(any()) }
+  }
 
-    @Test
-    fun `login invalid email address should 400 BAD REQUEST`() {
-        // todo
-    }
-
-    @Test
-    fun `login invalid email password combination should 401 UNAUTHORIZED`() {
-        // todo
-    }
-
-    @Test
-    fun `login empty body should 400 BAD REQUEST`() {
-        // todo
-    }
-
-    @Test
-    fun `login email parameter missing should 400 BAD REQUEST`() {
-        // todo
-    }
-
-    @Test
-    fun `login password parameter missing should 400 BAD REQUEST`() {
-        // todo
-    }
-
-    @Test
-    fun `refresh should return 200 and response success`() {
-        val request = AuthenticationObjectHelper.refreshTokenRequest
-        every { authService.refresh(request) } returns AuthenticationObjectHelper.refreshTokenResponse
-
-        performPostRequest(url = "/auth/refresh", content = json.encodeToString(request))
-            .andExpect(MockMvcResultMatchers.status().isOk)
-            .andExpect {
-                val actualJson = it.response.contentAsString
-                val expectedJson = Json.encodeToString(AuthenticationObjectHelper.refreshTokenResponse)
-                assertEquals(expectedJson, actualJson)
-            }
-
-        verify { authService.refresh(any()) }
-    }
-
-    @Test
-    fun `refresh empty body should 400 BAD REQUEST`() {
-        // todo
-    }
+  @Test
+  fun `refresh empty body should 400 BAD REQUEST`() {
+    // todo
+  }
 }

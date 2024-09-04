@@ -1,3 +1,5 @@
+![Coverage](.github/badges/jacoco.svg)
+
 # Calories
 
 Simple Spring Boot application to help you manage your calorie intake.

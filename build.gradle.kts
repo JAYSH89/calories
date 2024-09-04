@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.spring)
     alias(libs.plugins.dependency.management)
     alias(libs.plugins.sqldelight)
+    alias(libs.plugins.spotless)
+    jacoco
 }
 
 group = "nl.jaysh"
@@ -53,8 +55,30 @@ kotlin {
     }
 }
 
-tasks.withType<Test> {
+tasks.test {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+
+    reports {
+        xml.required = true
+        csv.required = true
+        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+spotless {
+    kotlin {
+        targetExclude("**/build/**")
+        ktfmt("0.52").googleStyle()
+    }
 }
 
 sqldelight {

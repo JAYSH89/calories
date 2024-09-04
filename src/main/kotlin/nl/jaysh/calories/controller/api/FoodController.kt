@@ -12,6 +12,5 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1/food")
 class FoodController(private val service: FoodService) {
 
-    @GetMapping
-    fun getAllFood(): List<Food> = service.getAllFood()
+  @GetMapping fun getAllFood(): List<Food> = service.getAllFood()
 }
