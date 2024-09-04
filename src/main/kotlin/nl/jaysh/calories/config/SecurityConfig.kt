@@ -13,18 +13,22 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 class SecurityConfig {
 
-    @Bean
-    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain = http
-        .cors { it.disable() }
-        .csrf { it.disable() }
-        .authorizeHttpRequests { requests ->
-            requests.requestMatchers("/").permitAll()
-            requests.requestMatchers("/error").permitAll()
-            requests.requestMatchers("/auth/**").permitAll()
-            requests.anyRequest().authenticated()
-        }
-        .logout { it.logoutSuccessUrl("/") }
-        .oauth2Login(withDefaults())
-        .addFilterBefore(FirebaseAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
-        .build()
+  @Bean
+  fun securityFilterChain(http: HttpSecurity): SecurityFilterChain =
+    http
+      .cors { it.disable() }
+      .csrf { it.disable() }
+      .authorizeHttpRequests { requests ->
+        requests.requestMatchers("/").permitAll()
+        requests.requestMatchers("/error").permitAll()
+        requests.requestMatchers("/auth/**").permitAll()
+        requests.anyRequest().authenticated()
+      }
+      .logout { it.logoutSuccessUrl("/") }
+      .oauth2Login(withDefaults())
+      .addFilterBefore(
+        FirebaseAuthenticationFilter(),
+        UsernamePasswordAuthenticationFilter::class.java,
+      )
+      .build()
 }

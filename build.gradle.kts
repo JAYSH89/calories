@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.js.inline.clean.removeUnusedImports
+
 plugins {
     alias(libs.plugins.jvm)
     alias(libs.plugins.kotlin.spring)
@@ -61,7 +63,7 @@ tasks.withType<Test> {
 spotless {
     kotlin {
         targetExclude("**/build/**")
-        ktfmt("0.46").googleStyle()
+        ktfmt("0.52").googleStyle()
     }
 }
 sqldelight {

@@ -10,10 +10,11 @@ import org.springframework.stereotype.Service
 @Service
 class FoodService(private val repository: FoodRepository) {
 
-    fun getAllFood() = repository.getAllFood(userId = getUserId())
+  fun getAllFood() = repository.getAllFood(userId = getUserId())
 
-    private fun getUserId(): String {
-        val authentication = SecurityContextHolder.getContext().authentication as FirebaseAuthenticationToken
-        return authentication.credentials
-    }
+  private fun getUserId(): String {
+    val authentication = SecurityContextHolder.getContext().authentication
+    val firebaseAuthToken = authentication as FirebaseAuthenticationToken
+    return firebaseAuthToken.credentials
+  }
 }

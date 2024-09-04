@@ -1,26 +1,22 @@
 package nl.jaysh.calories.model.serializers
 
+import java.util.*
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
-import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import java.util.*
 
 object UUIDSerializer : KSerializer<UUID> {
 
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor(
-        serialName = "UUID",
-        kind = PrimitiveKind.STRING,
-    )
+  override val descriptor = PrimitiveSerialDescriptor("UUID", PrimitiveKind.STRING)
 
-    override fun deserialize(decoder: Decoder): UUID {
-        val value = decoder.decodeString()
-        return UUID.fromString(value)
-    }
+  override fun deserialize(decoder: Decoder): UUID {
+    val value = decoder.decodeString()
+    return UUID.fromString(value)
+  }
 
-    override fun serialize(encoder: Encoder, value: UUID) {
-        encoder.encodeString(value.toString())
-    }
+  override fun serialize(encoder: Encoder, value: UUID) {
+    encoder.encodeString(value.toString())
+  }
 }
