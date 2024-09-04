@@ -33,6 +33,7 @@ ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serializatio
 logback-classic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logback" }
 
 exposed = { group = "org.jetbrains.exposed", name = "exposed-spring-boot-starter", version.ref = "exposed" }
+exposed-java-time = { group = "org.jetbrains.exposed", name = "exposed-java-time", version.ref = "exposed" }
 
 h2 = { group = "com.h2database", name = "h2" }
 postgresql = { group = "org.postgresql", name = "postgresql" }
@@ -44,6 +45,16 @@ mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 spring-mockk = { group = "com.ninja-squad", name = "springmockk", version.ref = "springmockk" }
 
 [bundles]
+coroutines = [
+    "kotlinx-coroutines-core",
+    "kotlinx-coroutines-reactor",
+]
+
+exposed = [
+    "exposed",
+    "exposed-java-time",
+]
+
 ktor = [
     "ktor-client-core",
     "ktor-client-cio",
@@ -51,11 +62,6 @@ ktor = [
     "ktor-client-logging",
     "ktor-serialization-kotlinx-json",
     "logback-classic",
-]
-
-coroutines = [
-    "kotlinx-coroutines-core",
-    "kotlinx-coroutines-reactor",
 ]
 
 mockk = [

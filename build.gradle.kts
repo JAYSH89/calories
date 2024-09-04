@@ -18,8 +18,8 @@ repositories { mavenCentral() }
 
 dependencies {
   implementation(libs.bundles.coroutines)
+  implementation(libs.bundles.exposed)
   implementation(libs.bundles.ktor)
-  implementation(libs.exposed)
   implementation(libs.firebase.admin)
   implementation(libs.kotlin.reflect)
   implementation(libs.kotlinx.serialization.json)
