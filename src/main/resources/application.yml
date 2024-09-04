@@ -22,5 +22,9 @@ spring:
     url: jdbc:postgresql://localhost:5432/calories
     username: postgres
     password: postgres
+    driver-class-name: org.postgresql.Driver
+  exposed:
+    generate-ddl: false
+    show-sql: true
 
 FIREBASE_API_KEY: ${FIREBASE_API_KEY}

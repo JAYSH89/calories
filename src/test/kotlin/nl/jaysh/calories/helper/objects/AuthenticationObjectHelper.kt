@@ -1,13 +1,13 @@
 package nl.jaysh.calories.helper.objects
 
-import nl.jaysh.calories.model.authentication.AuthenticationRequest
-import nl.jaysh.calories.model.authentication.AuthenticationResponse
-import nl.jaysh.calories.model.authentication.FirebaseLoginRequest
-import nl.jaysh.calories.model.authentication.FirebaseLoginResponse
-import nl.jaysh.calories.model.authentication.FirebaseRefreshRequest
-import nl.jaysh.calories.model.authentication.FirebaseRefreshResponse
-import nl.jaysh.calories.model.authentication.RefreshTokenRequest
-import nl.jaysh.calories.model.authentication.RefreshTokenResponse
+import nl.jaysh.calories.core.model.authentication.AuthenticationRequest
+import nl.jaysh.calories.core.model.authentication.AuthenticationResponse
+import nl.jaysh.calories.core.model.authentication.FirebaseLoginRequest
+import nl.jaysh.calories.core.model.authentication.FirebaseLoginResponse
+import nl.jaysh.calories.core.model.authentication.FirebaseRefreshRequest
+import nl.jaysh.calories.core.model.authentication.FirebaseRefreshResponse
+import nl.jaysh.calories.core.model.authentication.RefreshTokenRequest
+import nl.jaysh.calories.core.model.authentication.RefreshTokenResponse
 
 object AuthenticationObjectHelper {
   val authRequest = AuthenticationRequest(email = "test@example.com", password = "testPass123$")
