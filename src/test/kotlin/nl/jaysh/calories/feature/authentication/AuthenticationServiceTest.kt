@@ -8,9 +8,9 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import nl.jaysh.calories.core.exception.ApiRequestException
-import nl.jaysh.calories.helper.objects.AuthenticationObjectHelper
 import nl.jaysh.calories.core.model.authentication.FirebaseLoginRequest
 import nl.jaysh.calories.core.model.authentication.RefreshTokenRequest
+import nl.jaysh.calories.helper.objects.AuthenticationObjectHelper
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
