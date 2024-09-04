@@ -1,6 +1,5 @@
-import org.jetbrains.kotlin.js.inline.clean.removeUnusedImports
-
 plugins {
+    jacoco
     alias(libs.plugins.jvm)
     alias(libs.plugins.kotlin.spring)
     alias(libs.plugins.kotlin.serialization)
@@ -56,8 +55,24 @@ kotlin {
     }
 }
 
-tasks.withType<Test> {
+tasks.test {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+
+    reports {
+        xml.required = true
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+//    reportsDirectory = layout.buildDirectory.dir("customJacocoReportDir")
 }
 
 spotless {
@@ -66,6 +81,7 @@ spotless {
         ktfmt("0.52").googleStyle()
     }
 }
+
 sqldelight {
     databases {
         create("Database") {
