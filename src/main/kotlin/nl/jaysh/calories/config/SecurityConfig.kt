@@ -14,8 +14,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 class SecurityConfig {
 
   @Bean
-  fun securityFilterChain(http: HttpSecurity): SecurityFilterChain =
-    http
+  fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+    return http
       .cors { it.disable() }
       .csrf { it.disable() }
       .authorizeHttpRequests { requests ->
@@ -31,4 +31,5 @@ class SecurityConfig {
         UsernamePasswordAuthenticationFilter::class.java,
       )
       .build()
+  }
 }

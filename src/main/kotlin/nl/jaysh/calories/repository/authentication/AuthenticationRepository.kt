@@ -26,33 +26,40 @@ class AuthenticationRepository(
       ?: IllegalStateException("FIREBASE_API_KEY is missing")
   }
 
-  fun login(firebaseLoginRequest: FirebaseLoginRequest): FirebaseLoginResponse = runBlocking {
-    authClient
-      .post("/v1/accounts:signInWithPassword") {
-        contentType(ContentType.Application.Json)
-        parameter("key", apiKey)
-        setBody(firebaseLoginRequest)
-      }
-      .body<FirebaseLoginResponse>()
+  fun login(firebaseLoginRequest: FirebaseLoginRequest): FirebaseLoginResponse {
+    return runBlocking {
+      authClient
+        .post("/v1/accounts:signInWithPassword") {
+          contentType(ContentType.Application.Json)
+          parameter("key", apiKey)
+          setBody(firebaseLoginRequest)
+        }
+        .body<FirebaseLoginResponse>()
+    }
   }
 
-  fun register(email: String, password: String): FirebaseLoginResponse = runBlocking {
-    val createRequest =
-      CreateRequest().setEmail(email).setPassword(password).setEmailVerified(false)
+  fun register(email: String, password: String): FirebaseLoginResponse {
+    return runBlocking {
+      val createRequest =
+        CreateRequest().setEmail(email).setPassword(password).setEmailVerified(false)
 
-    FirebaseAuth.getInstance().createUser(createRequest)
+      FirebaseAuth.getInstance().createUser(createRequest)
 
-    val request = FirebaseLoginRequest(email = email, password = password, returnSecureToken = true)
-    login(firebaseLoginRequest = request)
+      val request =
+        FirebaseLoginRequest(email = email, password = password, returnSecureToken = true)
+      login(firebaseLoginRequest = request)
+    }
   }
 
-  fun refreshToken(request: FirebaseRefreshRequest): FirebaseRefreshResponse = runBlocking {
-    tokenClient
-      .post("/v1/token") {
-        contentType(ContentType.Application.Json)
-        parameter("key", apiKey)
-        setBody(request)
-      }
-      .body<FirebaseRefreshResponse>()
+  fun refreshToken(request: FirebaseRefreshRequest): FirebaseRefreshResponse {
+    return runBlocking {
+      tokenClient
+        .post("/v1/token") {
+          contentType(ContentType.Application.Json)
+          parameter("key", apiKey)
+          setBody(request)
+        }
+        .body<FirebaseRefreshResponse>()
+    }
   }
 }

@@ -48,18 +48,13 @@ class AuthenticationService(private val repository: AuthenticationRepository) {
 
   @Throws(ApiRequestException::class)
   private fun validatePassword(password: String) {
-    val lengthRequirement = password.length >= 10
-    val uppercaseRequirement = password.any { it.isUpperCase() }
-    val lowercaseRequirement = password.any { it.isLowerCase() }
-    val specialCharacterRequirement = password.any { it in "!@#\\\$%^&*()-_=+[]{}|;:'\\\",.<>?/" }
+    val length = password.length >= 10
+    val uppercase = password.any { it.isUpperCase() }
+    val lowercase = password.any { it.isLowerCase() }
+    val specialCharacter = password.any { it in "!@#\\\$%^&*()-_=+[]{}|;:'\\\",.<>?/" }
 
-    if (
-      !lengthRequirement ||
-        !uppercaseRequirement ||
-        !lowercaseRequirement ||
-        !specialCharacterRequirement
-    ) {
-      throw ApiRequestException(INVALID_PASSWORD)
-    }
+    val validPassword = length && uppercase && lowercase && specialCharacter
+
+    if (!validPassword) throw ApiRequestException(INVALID_PASSWORD)
   }
 }
