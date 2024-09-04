@@ -1,5 +1,4 @@
 plugins {
-    jacoco
     alias(libs.plugins.jvm)
     alias(libs.plugins.kotlin.spring)
     alias(libs.plugins.kotlin.serialization)
@@ -7,6 +6,7 @@ plugins {
     alias(libs.plugins.dependency.management)
     alias(libs.plugins.sqldelight)
     alias(libs.plugins.spotless)
+    jacoco
 }
 
 group = "nl.jaysh"
@@ -65,14 +65,13 @@ tasks.jacocoTestReport {
 
     reports {
         xml.required = true
-        csv.required = false
+        csv.required = true
         html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
     }
 }
 
 jacoco {
     toolVersion = "0.8.12"
-//    reportsDirectory = layout.buildDirectory.dir("customJacocoReportDir")
 }
 
 spotless {
