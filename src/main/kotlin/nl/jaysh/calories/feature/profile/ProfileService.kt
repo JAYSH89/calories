@@ -1,22 +1,41 @@
 package nl.jaysh.calories.feature.profile
 
+import nl.jaysh.calories.core.config.firebase.FirebaseAuthenticationToken
+import nl.jaysh.calories.core.exception.ErrorMessages.PROFILE_NOT_FOUND
 import nl.jaysh.calories.core.exception.NotFoundException
 import nl.jaysh.calories.core.model.profile.Profile
+import nl.jaysh.calories.core.model.profile.ProfileRequest
+import nl.jaysh.calories.core.model.profile.ProfileResponse
+import nl.jaysh.calories.core.model.profile.fromProfile
+import nl.jaysh.calories.core.model.profile.toProfile
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 
 @Service
 class ProfileService(private val repository: ProfileRepository) {
 
   @Throws(NotFoundException::class)
-  fun getProfile(id: String): Profile {
-    return repository.findById(id = id) ?: throw NotFoundException("profile not found")
+  fun getProfile(): Profile {
+    val userId = getUserId()
+    return repository.findById(userId) ?: throw NotFoundException(PROFILE_NOT_FOUND)
   }
 
-  fun saveProfile(profile: Profile): Profile {
-    return repository.upsert(profile)
+  fun saveProfile(profileRequest: ProfileRequest): ProfileResponse {
+    val userId = getUserId()
+    val upsertProfile = profileRequest.toProfile(userId)
+
+    val profile = repository.upsert(upsertProfile)
+    return ProfileResponse.fromProfile(profile)
   }
 
-  fun deleteProfile(profile: Profile) {
-    repository.delete(id = profile.userId)
+  fun deleteProfile() {
+    val userId = getUserId()
+    repository.delete(userId)
+  }
+
+  private fun getUserId(): String {
+    val authentication = SecurityContextHolder.getContext().authentication
+    val firebaseAuthToken = authentication as FirebaseAuthenticationToken
+    return firebaseAuthToken.credentials
   }
 }

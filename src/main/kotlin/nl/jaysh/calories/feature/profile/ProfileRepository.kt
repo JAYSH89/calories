@@ -1,5 +1,6 @@
 package nl.jaysh.calories.feature.profile
 
+import java.time.LocalDateTime
 import nl.jaysh.calories.core.model.profile.Profile
 import nl.jaysh.calories.core.model.profile.ProfileEntity
 import nl.jaysh.calories.core.model.profile.ProfileEntity.userId
@@ -21,14 +22,18 @@ class ProfileRepository {
   }
 
   fun upsert(profile: Profile): Profile {
+    val profileExists = findById(profile.userId)
+
     val result =
       ProfileEntity.upsert {
         it[userId] = profile.userId
         it[height] = profile.height
         it[weight] = profile.weight
         it[birthday] = profile.birthday
-        it[sex] = profile.sex.toString()
-        it[physicalActivityLevel] = profile.physicalActivityLevel.toString()
+        it[sex] = profile.sex?.toString()
+        it[physicalActivityLevel] = profile.physicalActivityLevel?.toString()
+        it[createdAt] = profileExists?.createdAt ?: LocalDateTime.now()
+        it[updatedAt] = LocalDateTime.now()
       }
     check(result.insertedCount == 1)
 

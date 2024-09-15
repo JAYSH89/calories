@@ -1,10 +1,12 @@
 package nl.jaysh.calories.core.model.profile
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.javatime.date
+import org.jetbrains.exposed.sql.javatime.datetime
 
 object ProfileEntity : Table(name = "profile") {
   val userId: Column<String> = varchar(name = "user_id", length = 100)
@@ -14,6 +16,8 @@ object ProfileEntity : Table(name = "profile") {
   val sex: Column<String?> = varchar(name = "sex", length = 10).nullable()
   val physicalActivityLevel: Column<String?> =
     varchar(name = "physical_activity_level", length = 50).nullable()
+  val createdAt: Column<LocalDateTime> = datetime(name = "created_at")
+  val updatedAt: Column<LocalDateTime> = datetime(name = "updated_at")
 
   override val primaryKey: PrimaryKey = PrimaryKey(userId)
 }
@@ -29,5 +33,7 @@ fun ResultRow.toProfile(): Profile {
     birthday = this[ProfileEntity.birthday],
     sex = sex,
     physicalActivityLevel = level,
+    createdAt = this[ProfileEntity.createdAt],
+    updatedAt = this[ProfileEntity.updatedAt],
   )
 }

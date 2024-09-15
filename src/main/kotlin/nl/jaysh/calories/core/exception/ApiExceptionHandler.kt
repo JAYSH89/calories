@@ -20,7 +20,7 @@ class ApiExceptionHandler {
   }
 
   @ExceptionHandler(value = [NoHandlerFoundException::class, NotFoundException::class])
-  fun handleNotFoundException(exception: NoHandlerFoundException): ResponseEntity<ApiException> {
+  fun handleNotFoundException(exception: Exception): ResponseEntity<ApiException> {
     val status = HttpStatus.NOT_FOUND
     val apiException = ApiException(message = ErrorMessages.NOT_FOUND, statusCode = status)
     return ResponseEntity(apiException, status)
