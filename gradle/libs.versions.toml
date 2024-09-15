@@ -9,6 +9,7 @@ firebase = "9.3.0"
 logback = "1.5.7"
 coroutines = "1.9.0-RC.2"
 mockk = "1.13.12"
+springdoc = "2.6.0"
 springmockk = "4.0.2"
 spotless = "6.22.0"
 
@@ -22,6 +23,7 @@ spring-boot-starter-data-jdbc = { group = "org.springframework.boot", name = "sp
 spring-boot-starter-web = { group = "org.springframework.boot", name = "spring-boot-starter-web" }
 spring-boot-devtools = { group = "org.springframework.boot", name = "spring-boot-devtools" }
 spring-boot-starter-security = { group = "org.springframework.boot", name = "spring-boot-starter-security" }
+spring-doc = { group = "org.springdoc", name = "springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
 spring-security-test = { group = "org.springframework.security", name = "spring-security-test" }
 spring-boot-starter-oauth2-client = { group = "org.springframework.boot", name = "spring-boot-starter-oauth2-client" }
 
