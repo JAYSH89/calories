@@ -41,6 +41,8 @@ class FirebaseAuthenticationFilter : OncePerRequestFilter() {
   }
 
   override fun shouldNotFilter(request: HttpServletRequest): Boolean {
-    return request.servletPath.startsWith("/auth")
+    return request.servletPath.startsWith("/auth") ||
+            request.servletPath.startsWith("/swagger-ui") ||
+            request.servletPath.startsWith("/api-docs")
   }
 }

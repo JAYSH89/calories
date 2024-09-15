@@ -22,6 +22,8 @@ class SecurityConfig {
         requests.requestMatchers("/").permitAll()
         requests.requestMatchers("/error").permitAll()
         requests.requestMatchers("/auth/**").permitAll()
+        requests.requestMatchers("/swagger-ui/**").permitAll()
+        requests.requestMatchers("/api-docs/**").permitAll()
         requests.anyRequest().authenticated()
       }
       .logout { it.logoutSuccessUrl("/") }

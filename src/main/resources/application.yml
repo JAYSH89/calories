@@ -27,4 +27,11 @@ spring:
     generate-ddl: false
     show-sql: true
 
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs
+
 FIREBASE_API_KEY: ${FIREBASE_API_KEY}
