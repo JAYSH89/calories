@@ -1,0 +1,25 @@
+meta {
+  name: 01 Create Profile
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{BASE_URL}}/api/v1/profile
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{JWT_TOKEN}}
+}
+
+body:json {
+  {
+    "height": 180,
+    "weight": 97,
+    "birthday": "1989-06-10",
+    "sex": "MALE",
+    "physical_activity_level": "NO_EXERCISE"
+  }
+}
